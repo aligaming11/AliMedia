@@ -25,9 +25,6 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build Kotlin Multiplatform iOS Framework
-        run: ./gradlew :shared:assembleSharedReleaseXCFramework
-
       - name: Build iOS App with Xcode
         run: |
           xcodebuild build \
