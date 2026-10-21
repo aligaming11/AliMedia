@@ -1,0 +1,44 @@
+name: Build iOS App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    name: Build iOS (No Mac Required)
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build Kotlin Multiplatform iOS Framework
+        run: ./gradlew :shared:assembleSharedReleaseXCFramework
+
+      - name: Build iOS App with Xcode
+        run: |
+          xcodebuild build \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -destination "generic/platform=iOS Simulator" \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Upload iOS App Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AliMedia-iOS-App
+          path: ~/Library/Developer/Xcode/DerivedData/**/Build/Products/Release-iphonesimulator/*.app

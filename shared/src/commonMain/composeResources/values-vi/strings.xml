@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigate_back">Quay lại</string>
+    <string name="title_activity_about">Về AliMedia</string>
+    <string name="title_licenses">Các giấy phép Bên thứ ba</string>
+    <string name="tab_about">Hỏi đáp &amp; Giới thiệu</string>
+    <string name="tab_licenses">Giấy phép</string>
+    <string name="app_description">Trình phát đa phương tiện và xem video thông minh bởi AliStudio Lab.</string>
+    <string name="contribution_title">Đóng góp ý kiến</string>
+    <string name="view_on_github">Ghé thăm Fanpage</string>
+    <string name="donation_title">Ủng hộ phát triển</string>
+    <string name="donation_encouragement">AliMedia được phát triển và tối ưu bởi AliStudio Lab nhằm mang đến trải nghiệm xem video mượt mà, tiện lợi nhất cho bạn.</string>
+    <string name="give_back">Ủng hộ qua Fanpage</string>
+    <string name="website_title">Cộng đồng AliStudio</string>
+    <string name="website_encouragement">Ghé thăm Fanpage chính thức của AliStudio Lab để cập nhật các phiên bản mới và mẹo sử dụng.</string>
+    <string name="privacy_policy_title">Chính sách Quyền riêng tư của AliMedia</string>
+    <string name="read_privacy_policy">Đọc chính sách quyền riêng tư</string>
+    <string name="app_license_title">Bản quyền của AliMedia</string>
+    <string name="read_full_license">Đọc giấy phép</string>
+    <string name="faq_title">Hỏi đáp thường gặp</string>
+    <string name="faq_description">AliMedia hoàn toàn miễn phí, hỗ trợ chặn quảng cáo, phát trong nền và cửa sổ nổi pop-up.</string>
+    <string name="faq">Hỗ trợ qua Fanpage</string>
+    <string name="open_in_browser">Mở Fanpage</string>
+    <string name="done">Đã xong</string>
+    <string name="not_available">Không khả dụng</string>
+</resources>

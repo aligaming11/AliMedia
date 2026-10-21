@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.schabi.newpipe.views.FocusAwareDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.schabi.newpipe.views.FocusAwareCoordinator
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment_holder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize" />
+
+        <include
+            layout="@layout/toolbar_layout"
+            android:id="@+id/toolbar_layout"/>
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment_player_holder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="0dp"
+            app:layout_behavior="org.schabi.newpipe.player.gesture.CustomBottomSheetBehavior" />
+
+        <FrameLayout
+            android:id="@+id/app_splash_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/windowBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:background="@drawable/bg_splash_icon_circle"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/splash_foreground" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/app_splash_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="AliMedia"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <ProgressBar
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="28dp"
+                    android:indeterminate="true"
+                    android:indeterminateTint="@color/light_settings_accent_color" />
+
+                <TextView
+                    android:id="@+id/app_splash_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:letterSpacing="0.08"
+                    android:text="By AliStudio Lab"
+                    android:textColor="@color/light_settings_accent_color"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </FrameLayout>
+
+    </org.schabi.newpipe.views.FocusAwareCoordinator>
+
+    <include
+        layout="@layout/drawer_layout"
+        android:id="@+id/drawer_layout" />
+
+</org.schabi.newpipe.views.FocusAwareDrawerLayout>
