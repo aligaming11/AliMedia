@@ -29,7 +29,7 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode_16.2.app
 
       - name: Prebuild Kotlin Framework for iOS Simulator
-        run: ./gradlew :shared:linkReleaseFrameworkIosSimulatorArm64 --stacktrace
+        run: ./gradlew :shared:linkReleaseFrameworkIosSimulatorArm64 --stacktrace --no-configuration-cache
 
       - name: Build iOS App with Xcode
         run: |
