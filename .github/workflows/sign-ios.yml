@@ -1,0 +1,100 @@
+name: Sign iOS IPA and Publish OTA Install Page
+
+# Yêu cầu GitHub Secrets (Settings -> Secrets and variables -> Actions):
+#   IOS_CERT_P12_BASE64      : nội dung file .p12 đã mã hoá base64
+#   IOS_CERT_PASSWORD        : mật khẩu file .p12
+#   IOS_PROVISION_BASE64     : nội dung file .mobileprovision đã mã hoá base64
+# Bật GitHub Pages: Settings -> Pages -> Source = "GitHub Actions"
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: "ID của run 'Build iOS App' chứa artifact AliMedia-iOS-IPA"
+        required: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: read
+
+jobs:
+  sign-and-publish:
+    runs-on: macos-14
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download unsigned IPA
+        uses: actions/download-artifact@v4
+        with:
+          name: AliMedia-iOS-IPA
+          run-id: ${{ inputs.build_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check signing secrets
+        env:
+          P12: ${{ secrets.IOS_CERT_P12_BASE64 }}
+          PROV: ${{ secrets.IOS_PROVISION_BASE64 }}
+        run: |
+          if [ -z "$P12" ] || [ -z "$PROV" ]; then
+            echo "::error::Thiếu secrets IOS_CERT_P12_BASE64 / IOS_PROVISION_BASE64"
+            exit 1
+          fi
+
+      - name: Install zsign
+        run: brew install zsign
+
+      - name: Sign IPA
+        env:
+          P12: ${{ secrets.IOS_CERT_P12_BASE64 }}
+          P12_PASS: ${{ secrets.IOS_CERT_PASSWORD }}
+          PROV: ${{ secrets.IOS_PROVISION_BASE64 }}
+        run: |
+          echo "$P12" | base64 --decode > cert.p12
+          echo "$PROV" | base64 --decode > profile.mobileprovision
+          zsign -k cert.p12 -p "$P12_PASS" -m profile.mobileprovision -o AliMedia-signed.ipa AliMedia.ipa
+          rm -f cert.p12
+
+      - name: Build OTA install page
+        run: |
+          mkdir -p site
+          cp AliMedia-signed.ipa site/AliMedia.ipa
+          unzip -q AliMedia-signed.ipa -d unz
+          BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" unz/Payload/*.app/Info.plist)
+          BASE="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}"
+          cat > site/manifest.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict><key>items</key><array><dict>
+            <key>assets</key><array><dict>
+              <key>kind</key><string>software-package</string>
+              <key>url</key><string>${BASE}/AliMedia.ipa</string>
+            </dict></array>
+            <key>metadata</key><dict>
+              <key>bundle-identifier</key><string>${BUNDLE_ID}</string>
+              <key>bundle-version</key><string>1.0</string>
+              <key>kind</key><string>software</string>
+              <key>title</key><string>AliMedia</string>
+            </dict>
+          </dict></array></dict></plist>
+          EOF
+          cat > site/index.html <<EOF
+          <!DOCTYPE html><html lang="vi"><head><meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1">
+          <title>Cài đặt AliMedia</title>
+          <style>body{font-family:-apple-system,sans-serif;background:#0f172a;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0}
+          a{background:linear-gradient(135deg,#6366f1,#ec4899);color:#fff;padding:18px 40px;border-radius:16px;font-size:20px;font-weight:600;text-decoration:none}
+          div{text-align:center}</style></head><body><div><h1>AliMedia</h1>
+          <a href="itms-services://?action=download-manifest&url=${BASE}/manifest.plist">Cài đặt</a></div></body></html>
+          EOF
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
